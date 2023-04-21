@@ -1,0 +1,9 @@
+task("testTask").doLast {
+    logger.info "Executing task ... property myProperty: ${myProperty}!"
+
+    // put an init.gradle in my GRADLE_HOME_DIR/init.d/
+    if (gradle.hasProperty("timestamp"))
+        logger.info "Hi, this was initiated from the init.gradle -- ${gradle.timestamp()}" // it is a CLOSURE!
+    else
+        logger.info "No timestamp property exists at this time on the gradle object"
+}

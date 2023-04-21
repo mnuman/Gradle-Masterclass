@@ -1,0 +1,32 @@
+task myFirstTask(){
+    doFirst {
+        logger.info "*** Executing doFirst section of myFirstTask"
+    }
+    logger.info "*** Executing task body for myFirstTask"
+    description = "my first task - not really"
+    group = "welcome"
+    doLast {
+        logger.info "*** Executing doLast section of myFirstTask, description: ${getDescription()}, group: ${getGroup()}"
+    }
+}
+
+myFirstTask.doLast {
+    // will be sequenced after the already configured actions in the task
+    logger.info "*** Yet another call to myFirstTask's doLast method - added from the script"
+}
+
+myFirstTask.doFirst {
+    // will be sequenced after the already configured actions in the task
+    logger.info "*** Yet another call to myFirstTask's doFirst method - added as the very first action!"
+}
+task configureOnly(){
+    logger.info "*** Task body for configureOnly - this should be run just once. I think."
+}
+
+project.gradle.taskGraph.beforeTask { Task task ->
+    logger.info "Before task " + task.getName()
+}
+
+project.gradle.taskGraph.afterTask { Task task ->
+    logger.info "Completed task " + task.getName()
+}

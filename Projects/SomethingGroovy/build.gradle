@@ -1,0 +1,79 @@
+// Variables, parameters and return types can be *optionally* typed
+// to return untyped values, the keyword 'def' is required - synonymous with Object in Java!
+apply {
+    println "*** Invoked from the Script's apply closure ... ***"
+}
+
+// create a task to scaffold execution of the method
+task("milco").doLast{
+    println doubleIt(2)
+}
+
+Integer doubleIt(Integer i){
+    def s2 = 'a string'
+    def s1 = "a string"
+    def s3 = """This
+is
+a
+multiline 
+string
+"""
+    Integer x = 4
+    def s4 = "x is interpolated using $x"
+    def myCourse = "gradle"
+    println "Currently I am attending a course on ${myCourse.toUpperCase()}"
+    println(i)
+    i*3
+    Integer y = i
+}
+
+def closureEchoIt = {
+    "I am invoked!"
+}
+// invoking a method parametrized with a closure
+def twoArgMethod(Integer factor, Closure c){
+    c() * factor
+}
+
+Closure closureWithParam = { param, a, b ->
+        println a + b
+        "Hello " + param + "!"
+}
+class Person {
+    String name = "Milco"
+    Closure nameSayer = {
+        println "Person: Hello " + name
+    }
+    // allows to add arbitrary code to class without changing the class' definition!
+    def executeInside(Closure c){
+        c.delegate = this
+        c()
+    }
+}
+
+task("myTask").doLast {
+    println closureEchoIt()
+    println closureWithParam("Milco", 1, 2)
+    println (twoArgMethod 3, {5})
+
+    // closures are often used for iterators - its default parameter is 'it'
+    [1,2,3].each {
+        println it*it
+    }
+
+    // Closures keep a reference to the context in which they were defined
+    // So when the context is updated, it will use the **update** value!
+    Person p1 = new Person()
+    p1.nameSayer()
+    p1.executeInside {println "Hello, I am being called from ${this} from task ${name}"}
+
+    // requires program argument --info added to the run configuration is run from IDE !
+    logger.info "Hi, I am a logger obtained from the Script interface!"
+
+    // invoking closure configured on init script
+    logger.info ">>> ${gradle.timestamp()} -- ${gradle.getGradleUserHomeDir().toString()}"
+
+    logger.info "$DEFAULT_BUILD_FILE from $DEFAULT_BUILD_DIR_NAME - default context = project ${getProject().getName()}"
+}
+
+
